@@ -30,7 +30,7 @@ Label(root, text="AppMaker", font=("New Time Roman", 20)).pack(side=TOP)
 
 projectList = Listbox(root, relief="groove", height=10)
 
-f = open('recent_project.json')
+f = open('appmaker_config.json')
 data = json.load(f)
 
 for i in data['ProjectPath']:
