@@ -120,17 +120,24 @@ labelVar = False
 side = TOP
 pady = 0
 fontsize = 10
+
 buttonVar = False
 side2 = TOP
 pady2 = 0
 fontsize2 = 10
+
+entryVar = False
+side3 = TOP
+pady3 = 0
+fontsize3 = 10
+
 imageVar = False
 textL = ""
+textB = ""
 bg_app = "snow"
 fg_app = "black"
 
 value_ctb = ""
-
 project_file = "C:/"
 path_ico = "C:/"
 path_image = "C:/"
@@ -160,17 +167,43 @@ def create_label():
 
 
 def create_button():
-    global buttonVar, side2, pady2, fontsize2
+    global buttonVar, side2, pady2, fontsize2, textB
 
     if buttonVar is False:
         buttonVar = True
+
+        text = askstring("AppMaker", "Button Text")
+
+        textB = text
+
         button2.config(text="UPDATE BUTTON")
     else:
         side2 = button_combo_side.get()
         pady2 = button_entry_pady.get()
         fontsize2 = button_entry_fontsize.get()
+
+        text = askstring("AppMaker", "Button Text")
+
+        textB = text
+
         print(buttonVar, side2, pady2)
-        messagebox.showinfo("AppMaker", "BUTTON updated !")
+        messagebox.showinfo("AppMaker", "Button updated !")
+
+
+def create_entry():
+    global entryVar, side3, pady3, fontsize3
+
+    if entryVar is False:
+        entryVar = True
+
+        button3.config(text="UPDATE ENTRY")
+    else:
+        side3 = entry_combo_side.get()
+        pady3 = entry_pady.get()
+        fontsize3 = entry_fontsize.get()
+
+        print(entryVar, side3, pady3)
+        messagebox.showinfo("AppMaker", "Entry updated !")
 
 
 def open_ico():
@@ -235,8 +268,12 @@ app.config(bg="{bg_app}", fg="{fg_app}")
 label = Label(app, text="{textL}", font=("New Time Roman", {fontsize}), bg="{bg_color}")
 label.pack(side={side.upper()}, pady={pady})
 
-button = Button(app, text="Label", font=("New Time Roman", {fontsize2}), relief="groove", bg="{button_color}")
+button = Button(app, text="{textB}", font=("New Time Roman", {fontsize2}), relief="groove", bg="{button_color}")
 button.pack(side={side2.upper()}, pady={pady2})
+
+entry = Entry(app, font=("New Time Roman", {fontsize3}), relief="groove", bg="{button_color}")
+entry.pack(side={side3.upper()}, pady={pady3})
+
 
 {value_ctb}
 app.mainloop()
@@ -271,20 +308,37 @@ app.mainloop()
             list_debug.insert(0, "MISSING: Option side not enter")
     if buttonVar is True:
         if side2 == "left":
-            label_t = Button(app_1, text="Label", font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            label_t.pack(side=LEFT, pady=pady2)
+            button_t = Button(app_1, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=LEFT, pady=pady2)
         elif side2 == "top":
-            label_t = Button(app_1, text="Label", font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            label_t.pack(side=TOP, pady=pady2)
+            button_t = Button(app_1, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=TOP, pady=pady2)
         elif side2 == "right":
-            label_t = Button(app_1, text="Label", font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            label_t.pack(side=RIGHT, pady=pady2)
+            button_t = Button(app_1, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=RIGHT, pady=pady2)
         elif side2 == "bottom":
-            label_t = Button(app_1, text="Label", font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            label_t.pack(side=BOTTOM, pady=pady2)
+            button_t = Button(app_1, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=BOTTOM, pady=pady2)
         else:
-            label_t = Button(app_1, text="Label", font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            label_t.pack(side=TOP, pady=pady2)
+            button_t = Button(app_1, text="Button", font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=TOP, pady=pady2)
+            list_debug.insert(0, "MISSING: Option side not enter")
+    if entryVar is True:
+        if side3 == "left":
+            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t.pack(side=LEFT, pady=pady3)
+        elif side3 == "top":
+            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t.pack(side=TOP, pady=pady3)
+        elif side3 == "right":
+            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t.pack(side=RIGHT, pady=pady3)
+        elif side3 == "bottom":
+            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t.pack(side=BOTTOM, pady=pady3)
+        else:
+            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t.pack(side=TOP, pady=pady3)
             list_debug.insert(0, "MISSING: Option side not enter")
 
 
@@ -335,8 +389,11 @@ app.config(bg="{bg_app}")
 label = Label(app, text="{textL}", font=("New Time Roman", {fontsize}), bg="{bg_color}", fg="{fg_app}")
 label.pack(side={side.upper()}, pady={pady})
 
-button = Button(app, text="Label", font=("New Time Roman", {fontsize2}), bg="{button_color}")
+button = Button(app, text="{textB}", font=("New Time Roman", {fontsize2}), bg="{button_color}")
 button.pack(side={side2.upper()}, pady={pady2})
+
+entry = Entry(app, font=("New Time Roman", {fontsize3}), relief="groove", bg="{button_color}")
+entry.pack(side={side3.upper()}, pady={pady3})
 
 {value_ctb}
 
@@ -397,6 +454,27 @@ button_label2.pack()
 button_entry_fontsize = Entry(frame_right)
 button_entry_fontsize.pack(fill=BOTH)
 
+button3 = Button(frame_right, text="Create Entry", width=12, relief="groove", bg=button_color, command=create_entry)
+button3.pack(pady=5)
+
+entry_label1 = Label(frame_right, text="Side of Entry", font=("New Time Roman", 12))
+entry_label1.pack()
+
+entry_combo_side = Combobox(frame_right, state="readonly", values=["left", "top", "right", "bottom"])
+entry_combo_side.pack()
+
+entry_label2 = Label(frame_right, text="Pady of Entry", font=("New Time Roman", 12))
+entry_label2.pack()
+
+entry_pady = Entry(frame_right)
+entry_pady.pack(fill=BOTH)
+
+entry_label3 = Label(frame_right, text="Font size of Entry", font=("New Time Roman", 12))
+entry_label3.pack()
+
+entry_fontsize = Entry(frame_right)
+entry_fontsize.pack(fill=BOTH)
+
 button3 = Button(frame_right, text="Create Image", width=12, relief="groove", bg=button_color, command=open_image)
 button3.pack(pady=5)
 
@@ -434,7 +512,8 @@ entry_name.pack()
 label_icon = Label(general_info, text="Icon Path", font=("New Time Roman", 12))
 label_icon.pack()
 
-button_icon = Button(general_info, text="Open Icon", width=17, command=open_ico)
+button_icon = Button(general_info, text="Open Icon", width=17, relief="groove", bg=button_color,
+                     command=open_ico)
 button_icon.pack()
 
 label_width = Label(general_info, text="Width App", font=("New Time Roman", 12))
