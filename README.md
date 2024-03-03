@@ -13,4 +13,4 @@
   3) Export at *.py* and *.pyw*
   
 
-**Version Alpha-1.5.0**
+**Version Alpha-2.5.0**
