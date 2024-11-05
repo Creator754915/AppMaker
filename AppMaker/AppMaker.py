@@ -118,12 +118,12 @@ label_color = "#2ecc71"  # Green label color
 
 labelVar = False
 side = TOP
-pady = 0
+PadyLabel = 0
 fontsize = 10
 
 buttonVar = False
 side2 = TOP
-pady2 = 0
+PadyButton = 0
 fontsize2 = 10
 
 entryVar = False
@@ -144,7 +144,7 @@ path_image = "C:/"
 
 
 def create_label():
-    global labelVar, side, pady, fontsize, textL
+    global labelVar, side, PadyLabel, fontsize, textL
 
     if labelVar is False:
         labelVar = True
@@ -155,39 +155,35 @@ def create_label():
         button1.config(text="UPDATE LABEL")
     else:
         side = combo_side.get()
-        pady = entry_pady.get()
+        PadyLabel = entry_pady.get()
         fontsize = entry_fontsize.get()
 
         text = askstring("AppMaker", "Label Text")
 
         textL = text
 
-        print(labelVar, side, pady, textL)
+        print(labelVar, side, PadyLabel, textL)
         messagebox.showinfo("AppMaker", "Label updated !")
 
 
-def create_button():
-    global buttonVar, side2, pady2, fontsize2, textB
+def CreateButton():
+    global buttonVar, side2, PadyButton, fontsize2, textB
 
-    if buttonVar is False:
+    if not buttonVar:
         buttonVar = True
 
-        text = askstring("AppMaker", "Button Text")
+        textB = askstring("AppMaker", "Button Text")
 
-        textB = text
-
-        button2.config(text="UPDATE BUTTON")
+        button2.config(text="Button updated with success !")
     else:
         side2 = button_combo_side.get()
-        pady2 = button_entry_pady.get()
+        PadyButton = button_entry_pady.get()
         fontsize2 = button_entry_fontsize.get()
 
-        text = askstring("AppMaker", "Button Text")
+        textB = askstring("AppMaker", "Enter Button Text")
 
-        textB = text
-
-        print(buttonVar, side2, pady2)
-        messagebox.showinfo("AppMaker", "Button updated !")
+        print(buttonVar, side2, PadyButton)
+        messagebox.showinfo("AppMaker", "Button updated with success !")
 
 
 def create_entry():
@@ -223,7 +219,7 @@ def open_image():
     label_image.configure(text=path_image)
 
 
-def custom_element():
+def CustomElementUI():
     app_cust = Tk()
     app_cust.title("Custom Element Editor")
     app_cust.geometry("600x500")
@@ -252,8 +248,8 @@ def run_app():
     checkW = chk1.get()
     checkH = chk2.get()
     app_name = entry_name.get()
-    bg_app = combo_bg.get()
-    fg_app = combo_fg.get()
+    BackgroundApp = combo_bg.get()
+    FgApp = combo_fg.get()
 
     text_box.delete("1.0", END)
 
@@ -263,13 +259,13 @@ app = Tk()
 app.title("{app_name}")
 app.geometry("{value1}x{value2}")
 app.resizable({checkW}, {checkH})
-app.config(bg="{bg_app}", fg="{fg_app}")
+app.config(bg="{BackgroundApp}", fg="{FgApp}")
 
 label = Label(app, text="{textL}", font=("New Time Roman", {fontsize}), bg="{bg_color}")
-label.pack(side={side.upper()}, pady={pady})
+label.pack(side={side.upper()}, pady={PadyLabel})
 
 button = Button(app, text="{textB}", font=("New Time Roman", {fontsize2}), relief="groove", bg="{button_color}")
-button.pack(side={side2.upper()}, pady={pady2})
+button.pack(side={side2.upper()}, pady={PadyButton})
 
 entry = Entry(app, font=("New Time Roman", {fontsize3}), relief="groove", bg="{button_color}")
 entry.pack(side={side3.upper()}, pady={pady3})
@@ -281,63 +277,63 @@ app.mainloop()
 
     list_debug.insert(0, "PROCESS: The program still run")
 
-    app_1 = Tk()
+    previewApp = Tk()
 
-    app_1.geometry(f"{value1}x{value2}")
-    app_1.title(f"{app_name}")
-    app_1.iconbitmap(path_ico)
-    app_1.resizable(checkW, checkH)
-    app_1.config(bg=bg_app)
+    previewApp.geometry(f"{value1}x{value2}")
+    previewApp.title(f"{app_name}")
+    previewApp.iconbitmap(path_ico)
+    previewApp.resizable(checkW, checkH)
+    previewApp.config(bg=BackgroundApp)
 
-    if labelVar is True:
+    if labelVar:
         if side == "left":
-            label_t = Label(app_1, text=textL, font=("New Time Roman", fontsize), fg=fg_app, bg=bg_app)
-            label_t.pack(side=LEFT, pady=pady)
+            label_t = Label(previewApp, text=textL, font=("New Time Roman", fontsize), fg=FgApp, bg=BackgroundApp)
+            label_t.pack(side=LEFT, pady=PadyLabel)
         elif side == "top":
-            label_t = Label(app_1, text=textL, font=("New Time Roman", fontsize), fg=fg_app, bg=bg_app)
-            label_t.pack(side=TOP, pady=pady)
+            label_t = Label(previewApp, text=textL, font=("New Time Roman", fontsize), fg=FgApp, bg=BackgroundApp)
+            label_t.pack(side=TOP, pady=PadyLabel)
         elif side == "right":
-            label_t = Label(app_1, text=textL, font=("New Time Roman", fontsize), fg=fg_app, bg=bg_app)
-            label_t.pack(side=RIGHT, pady=pady)
+            label_t = Label(previewApp, text=textL, font=("New Time Roman", fontsize), fg=FgApp, bg=BackgroundApp)
+            label_t.pack(side=RIGHT, pady=PadyLabel)
         elif side == "bottom":
-            label_t = Label(app_1, text=textL, font=("New Time Roman", fontsize), fg=fg_app, bg=bg_app)
-            label_t.pack(side=BOTTOM, pady=pady)
+            label_t = Label(previewApp, text=textL, font=("New Time Roman", fontsize), fg=FgApp, bg=BackgroundApp)
+            label_t.pack(side=BOTTOM, pady=PadyLabel)
         else:
-            label_t = Label(app_1, text="Label", font=("New Time Roman", fontsize), fg=fg_app, bg=bg_app)
-            label_t.pack(side=TOP, pady=pady)
+            label_t = Label(previewApp, text="Label", font=("New Time Roman", fontsize), fg=FgApp, bg=BackgroundApp)
+            label_t.pack(side=TOP, pady=PadyLabel)
             list_debug.insert(0, "MISSING: Option side not enter")
-    if buttonVar is True:
+    if buttonVar:
         if side2 == "left":
-            button_t = Button(app_1, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            button_t.pack(side=LEFT, pady=pady2)
+            button_t = Button(previewApp, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=LEFT, pady=PadyButton)
         elif side2 == "top":
-            button_t = Button(app_1, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            button_t.pack(side=TOP, pady=pady2)
+            button_t = Button(previewApp, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=TOP, pady=PadyButton)
         elif side2 == "right":
-            button_t = Button(app_1, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            button_t.pack(side=RIGHT, pady=pady2)
+            button_t = Button(previewApp, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=RIGHT, pady=PadyButton)
         elif side2 == "bottom":
-            button_t = Button(app_1, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            button_t.pack(side=BOTTOM, pady=pady2)
+            button_t = Button(previewApp, text=textB, font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=BOTTOM, pady=PadyButton)
         else:
-            button_t = Button(app_1, text="Button", font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
-            button_t.pack(side=TOP, pady=pady2)
+            button_t = Button(previewApp, text="Button", font=("New Time Roman", fontsize2), relief="groove", bg=button_color)
+            button_t.pack(side=TOP, pady=PadyButton)
             list_debug.insert(0, "MISSING: Option side not enter")
-    if entryVar is True:
+    if entryVar:
         if side3 == "left":
-            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t = Entry(previewApp, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
             entry_t.pack(side=LEFT, pady=pady3)
         elif side3 == "top":
-            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t = Entry(previewApp, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
             entry_t.pack(side=TOP, pady=pady3)
         elif side3 == "right":
-            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t = Entry(previewApp, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
             entry_t.pack(side=RIGHT, pady=pady3)
         elif side3 == "bottom":
-            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t = Entry(previewApp, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
             entry_t.pack(side=BOTTOM, pady=pady3)
         else:
-            entry_t = Entry(app_1, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
+            entry_t = Entry(previewApp, font=("New Time Roman", fontsize3), relief="groove", bg=button_color)
             entry_t.pack(side=TOP, pady=pady3)
             list_debug.insert(0, "MISSING: Option side not enter")
 
@@ -413,10 +409,10 @@ app.resizable({checkW}, {checkH})
 app.config(bg="{bg_app}")
 
 label = Label(app, text="{textL}", font=("New Time Roman", {fontsize}), bg="{bg_color}", fg="{fg_app}")
-label.pack(side={side.upper()}, pady={pady})
+label.pack(side={side.upper()}, pady={PadyLabel})
 
 button = Button(app, text="{textB}", font=("New Time Roman", {fontsize2}), bg="{button_color}")
-button.pack(side={side2.upper()}, pady={pady2})
+button.pack(side={side2.upper()}, pady={PadyButton})
 
 entry = Entry(app, font=("New Time Roman", {fontsize3}), relief="groove", bg="{button_color}")
 entry.pack(side={side3.upper()}, pady={pady3})
@@ -459,7 +455,7 @@ label2.pack()
 entry_fontsize = Entry(frame_right)
 entry_fontsize.pack(fill=BOTH)
 
-button2 = Button(frame_right, text="Create Button", width=12, relief="groove", bg=button_color, command=create_button)
+button2 = Button(frame_right, text="Create Button", width=12, relief="groove", bg=button_color, command=CreateButton)
 button2.pack(pady=5)
 
 button_label1 = Label(frame_right, text="Side of Button", font=("New Time Roman", 12))
@@ -507,7 +503,7 @@ button3.pack(pady=5)
 label_image = Label(frame_right, text=path_image, bg=bg_color)
 label_image.pack()
 
-button4 = Button(frame_right, text="Custom Element", width=12, relief="groove", bg=button_color, command=custom_element)
+button4 = Button(frame_right, text="Custom Element", width=12, relief="groove", bg=button_color, command=CustomElementUI)
 button4.pack(pady=5)
 
 # Middle Frame
@@ -629,10 +625,10 @@ app.geometry("{value1}x{value2}")
 app.resizable({checkW}, {checkH})
 
 label = Label(app, text="{textL}", font=("New Time Roman", {fontsize}), bg="red")
-label.pack(side={side.upper()}, pady={pady})
+label.pack(side={side.upper()}, pady={PadyLabel})
 
 button = Button(app, text="Label", font=("New Time Roman", {fontsize2}), bg="red")
-button.pack(side={side2.upper()}, pady={pady2})
+button.pack(side={side2.upper()}, pady={PadyButton})
 
 app.mainloop()
     '''
