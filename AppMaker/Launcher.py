@@ -1,24 +1,9 @@
 from tkinter import *
-import json
-from tkinter import messagebox, filedialog
-
-bg_color = "#EFEFEF"
-button_color = "#3498db"
-label_color = "#2ecc71"
-x = 0
+from AppMaker.Variables import bg_color, button_color
 
 
 def run():
-    from inter import inter
     root.quit()
-    inter()
-
-
-def get_selection():
-    folder_selected = filedialog.askdirectory()
-    indices = projectList.curselection()
-    for i in indices:
-        print(data["ProjectPath"]["".join(projectList.get(i))])
 
 
 root = Tk()
@@ -30,22 +15,12 @@ root.config(bg=bg_color)
 Label(root, text="AppMaker", font=("New Time Roman", 20)).pack(side=TOP)
 
 projectList = Listbox(root, relief="groove", height=10)
-
-f = open('AppMaker/appmaker_config.json')
-data = json.load(f)
-
-for i in data['ProjectPath']:
-    x += 1
-    projectList.insert(x, i)
-
-f.close()
-
 projectList.pack(fill="both", padx=55, pady=5)
 
 startBtn = Button(root, text="New Project", relief='groove', bg=button_color, command=run)
 startBtn.pack(side=BOTTOM, fill='both', padx=55, pady=15)
 
-openBtn = Button(root, text="Open Project", relief='groove', bg=button_color, command=get_selection)
+openBtn = Button(root, text="Open Project", relief='groove', bg=button_color)
 openBtn.pack(side=BOTTOM, fill='both', padx=55, pady=15)
 
 root.mainloop()
