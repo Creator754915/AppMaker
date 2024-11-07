@@ -1,5 +1,9 @@
 from tkinter import *
 
+bg_color = "#EFEFEF"
+button_color = "#3498db"
+label_color = "#2ecc71"
+
 BASE_DICT = {
     "Window": {},
     "Buttons": {},
