@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox, filedialog
 from tkinter.filedialog import asksaveasfile
 from tkinter.simpledialog import askstring
-from tkinter.ttk import Combobox, Notebook
+from tkinter.ttk import Combobox, Notebook, Treeview
 
 from AppMaker.Variables import *
 from AppMaker.Variables import BASE_DICT, BASE_BTN
@@ -10,35 +10,33 @@ from AppMaker.Widgets.WindowGUI import WindowPreview
 
 
 class AppMaker(Tk):
-    def __init__(self, title="AppMaker"):
+    def __init__(self):
         super().__init__()
         self.ctrl_pressed = False
-        self.title(title)
         self.geometry("1080x680")
         self.ProjectName = "UnNamed_1"
+        self.title(f'AppMaker - {self.ProjectName}')
         self.ProjectPATH = NONE
         self.ProjectData = NONE
         self.ElementDict = BASE_DICT
         self.WidthV, self.HeightV = BooleanVar(), BooleanVar()
         self.saved = False
 
-        self.projectLabel = Label(self, text=self.ProjectName, font=("New Time Roman", 18))
-        self.projectLabel.pack()
-
-        self.FrameRight = Frame(self, width=250, bg="gray89")
+        self.FrameRight = Frame(self, width=250, bg=frame_bg)
         self.FrameRight.pack(side=RIGHT, fill=BOTH)
 
         self.FrameMiddle = Frame(self, width=450)
         self.FrameMiddle.pack(expand=1, fill=BOTH)
 
-        self.FrameBottom = Frame(self, height=200, bg="gray89")
+        self.FrameBottom = Frame(self, height=200, bg=frame_bg)
         self.FrameBottom.pack(side=BOTTOM, fill=BOTH)
 
-        WindowPreview(master=self).pack(fill=BOTH, expand=True)
+
+        WindowPreview(master=self.FrameMiddle, highlightbackground="gray80", highlightthickness=2).pack(pady=20, padx=20, fill=BOTH, expand=True)
 
 
-        self.NoteBook = Notebook(self.FrameBottom)
-        self.NoteBook.pack(pady=5, fill="both", expand=True)
+        self.NoteBook = Notebook(self.FrameRight)
+        self.NoteBook.pack(fill="both", expand=True)
 
         self.WindowInfo = Frame(self.NoteBook)
         self.ElementsSettings = Frame(self.NoteBook)
@@ -48,9 +46,16 @@ class AppMaker(Tk):
         self.ElementsSettings.pack(fill='both', expand=True)
         self.ProjectSettings.pack(fill='both', expand=True)
 
-        self.NoteBook.add(self.WindowInfo, text='Window Information')
-        self.NoteBook.add(self.ElementsSettings, text='Elements Settings')
-        self.NoteBook.add(self.ProjectSettings, text='Project Settings')
+        self.NoteBook.add(self.ProjectSettings, text='Project')
+        self.NoteBook.add(self.WindowInfo, text='Window')
+        self.NoteBook.add(self.ElementsSettings, text='Elements')
+
+        # Project Panel
+
+        self.ApplicationTree = Treeview(self.ProjectSettings)
+        self.ApplicationTree.pack(pady=5, padx=2)
+
+        # Window Panel
 
         Label(self.WindowInfo, text="Application Name", font=("New Time Roman", 12)).pack()
 
@@ -87,6 +92,12 @@ class AppMaker(Tk):
         self.checkbox2 = Checkbutton(self.WindowInfo, text='Height', variable=self.HeightV, onvalue=True, offvalue=False)
         self.checkbox2.pack()
 
+        # Element Panel
+
+        Button(self.ElementsSettings, text="Create Button", bg=button_color, relief='groove',command=self.CreateButton).pack(fill=X, padx=10, pady=10)
+        Button(self.ElementsSettings, text="Create Label", bg=button_color, relief='groove').pack(fill=X, padx=10, pady=10)
+        Button(self.ElementsSettings, text="Create Entry", bg=button_color, relief='groove').pack(fill=X, padx=10, pady=10)
+
         #self.CreateNewProject()
 
         self.MenuBar = Menu(self)
@@ -114,8 +125,20 @@ class AppMaker(Tk):
         self.MenuBar.add_cascade(label="Edit", menu=self.EditMenu)
         self.MenuBar.add_cascade(label="Run", menu=self.RunMenu)
 
+        self.ButtonXPos = Button(self, width=1, height=50, bg="black")
+        self.ButtonYPos = Button(self, width=120, height=1, bg="black")
+
+        # self.bind("<Motion>", self.test)
+
         self.mainloop()
 
+
+    def PosEvent(self, event):
+        if event.x > 840:
+            self.ButtonXPos.place(x=0, y=0)
+        self.ButtonXPos.place(x=event.x / 1, y=0)
+        self.ButtonYPos.place(x=0, y=event.y)
+        print(event.x, event.y)
 
 
     def OpenProject(self):
@@ -138,6 +161,7 @@ class AppMaker(Tk):
                                          ("All Files", "*.*")])
 
                 self.ProjectPATH.write(self.ElementDict)
+                self.title(f'AppMaker - {self.ProjectName}')
 
 
     def CreateButton(self):
@@ -172,6 +196,8 @@ class AppMaker(Tk):
                     "padx": int(PaddingXButtonEntry.get()),
                     "command": FunctionButtonEntry.get()
                 }
+
+            self.ApplicationTree.insert("", END, text=f"Button {len(self.ElementDict["Buttons"])}")
 
             print(self.ElementDict["Buttons"])
 
@@ -244,6 +270,10 @@ class AppMaker(Tk):
                     command=self.ElementDict["Buttons"][str(i)]["command"])
              .pack(side=self.ElementDict["Buttons"][str(i)]["side"], fill=self.ElementDict["Buttons"][str(i)]["fill"],
                    padx=self.ElementDict["Buttons"][str(i)]["padx"], pady=self.ElementDict["Buttons"][str(i)]["pady"]))
+
+            (Label(PreviewApp, text=self.ElementDict["Labels"][str(i)]["text"])
+             .pack(side=self.ElementDict["Labels"][str(i)]["side"],
+                   padx=self.ElementDict["Labels"][str(i)]["padx"], pady=self.ElementDict["Labels"][str(i)]["pady"]))
 
         PreviewApp.mainloop()
 
