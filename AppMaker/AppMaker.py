@@ -1,5 +1,6 @@
+import datetime
 from tkinter import *
-from tkinter import messagebox, filedialog
+from tkinter import messagebox, filedialog, colorchooser
 from tkinter.filedialog import asksaveasfile
 from tkinter.simpledialog import askstring
 from tkinter.ttk import Combobox, Notebook, Treeview
@@ -19,7 +20,7 @@ class AppMaker(Tk):
         self.ProjectPATH = NONE
         self.ProjectData = NONE
         self.ElementDict = BASE_DICT
-        self.WidthV, self.HeightV = BooleanVar(), BooleanVar()
+        self.ElementColor = "black"
         self.saved = False
 
         self.FrameRight = Frame(self, width=250, bg=frame_bg)
@@ -31,8 +32,13 @@ class AppMaker(Tk):
         self.FrameBottom = Frame(self, height=200, bg=frame_bg)
         self.FrameBottom.pack(side=BOTTOM, fill=BOTH)
 
+        # Console Panel
 
-        WindowPreview(master=self.FrameMiddle, highlightbackground="gray80", highlightthickness=2).pack(pady=20, padx=20, fill=BOTH, expand=True)
+        self.ListDebug = Listbox(self.FrameBottom, fg="red")
+        self.ListDebug.pack(fill=X)
+
+
+        WindowPreview(master=self.FrameMiddle, cursor="center_ptr", highlightbackground="gray80", highlightthickness=2).pack(pady=20, padx=20, fill=BOTH, expand=True)
 
 
         self.NoteBook = Notebook(self.FrameRight)
@@ -59,44 +65,59 @@ class AppMaker(Tk):
 
         Label(self.WindowInfo, text="Application Name", font=("New Time Roman", 12)).pack()
 
-        self.AppName = Entry(self.WindowInfo)
+        def on_value_change(*args):
+            self.ElementDict["Window"]["title"] = self.AppName.get()
+            self.ElementDict["Window"]["bg"] = self.BgApp.get()
+            self.ElementDict["Window"]["geometry"] = f"{AppWithValue.get()}x{AppHeightValue.get()}"
+            self.ElementDict["Window"]["resizable"] = [WidthBool.get(), HeightBool.get()]
+
+        EntryNameValue = StringVar()
+        EntryBgValue = StringVar()
+        AppWithValue = IntVar()
+        AppHeightValue = IntVar()
+        WidthBool = BooleanVar()
+        HeightBool = BooleanVar()
+
+        EntryNameValue.trace_add("write", on_value_change)
+        EntryBgValue.trace_add("write", on_value_change)
+        AppWithValue.trace_add("write", on_value_change)
+        AppHeightValue.trace_add("write", on_value_change)
+        WidthBool.trace_add("write", on_value_change)
+        HeightBool.trace_add("write", on_value_change)
+
+        self.AppName = Entry(self.WindowInfo, textvariable=EntryNameValue)
         self.AppName.pack()
 
         Label(self.WindowInfo, text="Background Color", font=("New Time Roman", 12)).pack()
-
-        self.BgApp = Entry(self.WindowInfo)
+        self.BgApp = Entry(self.WindowInfo, textvariable=EntryBgValue)
         self.BgApp.pack()
 
         Label(self.WindowInfo, text="Icon Path", font=("New Time Roman", 12)).pack()
-
         self.button_icon = Button(self.WindowInfo, text="Open Icon", width=17, relief="groove", bg=button_color)
         self.button_icon.pack()
 
         Label(self.WindowInfo, text="Width App", font=("New Time Roman", 12)).pack()
-
-        self.slider1 = Scale(self.WindowInfo, from_=200, to=1080, orient=HORIZONTAL, activebackground="gray", length=200, bd=0)
-        self.slider1.set(720)
-        self.slider1.pack()
+        self.SliderWidth = Scale(self.WindowInfo, variable=AppWithValue, from_=200, to=1080, orient=HORIZONTAL, activebackground="gray", length=200, bd=0)
+        self.SliderWidth.set(720)
+        self.SliderWidth.pack()
 
         Label(self.WindowInfo, text="Height App", font=("New Time Roman", 12)).pack()
-
-        self.slider2 = Scale(self.WindowInfo, from_=200, to=1080, orient=HORIZONTAL, activebackground="gray", length=200, bd=0)
-        self.slider2.set(460)
-        self.slider2.pack()
+        self.SliderHeight = Scale(self.WindowInfo, variable=AppHeightValue, from_=200, to=1080, orient=HORIZONTAL, activebackground="gray", length=200, bd=0)
+        self.SliderHeight.set(460)
+        self.SliderHeight.pack()
 
         Label(self.WindowInfo, text="Resizable", font=("New Time Roman", 10)).pack()
+        self.CheckboxWidth = Checkbutton(self.WindowInfo, text='Width', variable=WidthBool, onvalue=True, offvalue=False)
+        self.CheckboxWidth.pack()
 
-        self.checkbox1 = Checkbutton(self.WindowInfo, text='Width', variable=self.WidthV, onvalue=True, offvalue=False)
-        self.checkbox1.pack()
-
-        self.checkbox2 = Checkbutton(self.WindowInfo, text='Height', variable=self.HeightV, onvalue=True, offvalue=False)
-        self.checkbox2.pack()
+        self.CheckboxHeight = Checkbutton(self.WindowInfo, text='Height', variable=HeightBool, onvalue=True, offvalue=False)
+        self.CheckboxHeight.pack()
 
         # Element Panel
 
-        Button(self.ElementsSettings, text="Create Button", bg=button_color, relief='groove',command=self.CreateButton).pack(fill=X, padx=10, pady=10)
-        Button(self.ElementsSettings, text="Create Label", bg=button_color, relief='groove', command=self.CreateLabel).pack(fill=X, padx=10, pady=10)
-        Button(self.ElementsSettings, text="Create Entry", bg=button_color, relief='groove').pack(fill=X, padx=10, pady=10)
+        Button(self.ElementsSettings, text="Create Button", cursor="hand2", bg=button_color, relief='groove',command=self.CreateButton).pack(fill=X, padx=10, pady=10)
+        Button(self.ElementsSettings, text="Create Label", cursor="hand2", bg=button_color, relief='groove', command=self.CreateLabel).pack(fill=X, padx=10, pady=10)
+        Button(self.ElementsSettings, text="Create Entry", cursor="hand2", bg=button_color, relief='groove').pack(fill=X, padx=10, pady=10)
 
         #self.CreateNewProject()
 
@@ -176,12 +197,10 @@ class AppMaker(Tk):
                 relief=ReliefButtonStyle.get(),
                 width=int(WidthButtonEntry.get()),
                 border=int(BorderWidthButtonEntry.get()),
-                pady=int(PaddingYButtonEntry.get()),
-                padx=int(PaddingXButtonEntry.get()),
-                side=SideButtonStyle.get(),
                 command=str(FunctionButtonEntry.get())
             )
-            button.pack(pady=10)
+            button.pack(pady=int(PaddingYButtonEntry.get()), padx=int(PaddingXButtonEntry.get()),
+                        side=SideButtonStyle.get())
 
             for i in range(len(self.ElementDict["Buttons"]) + 1):
                 self.ElementDict["Buttons"][str(i)] = {
@@ -260,15 +279,20 @@ class AppMaker(Tk):
         ButtonApp.mainloop()
 
     def CreateLabel(self):
+        def ColorChooser():
+            self.ElementColor = colorchooser.askcolor(title="Choose color for the background")
+
         def create_label():
-            Label(LabelApp, text=LabelTextEntry.get(), bg=BgLabelEntry.get(), fg=FgLabelEntry.get(), font=("Arial", int(FontLabelEntry.get())),
+            (Label(LabelApp, text=LabelTextEntry.get(), bg=self.ElementColor, fg=FgLabelEntry.get(), font=("Arial", int(FontLabelEntry.get())),
                   wraplength=int(WrapLabelValue.get()), underline=int(UnderlineLabelStyle.get()), relief=ReliefLabelCombobox.get(),
-                  border=BorderWidthLabelEntry.get(), width=WidthLabelStyle.get()).pack(pady=int(PaddingYLabelEntry.get()), padx=int(PaddingXLabelEntry.get()),
-                                                                side=SideLabelCombobox.get())
+                  border=BorderWidthLabelEntry.get(), width=WidthLabelStyle.get())
+            .pack(pady=int(PaddingYLabelEntry.get()), padx=int(PaddingXLabelEntry.get()),
+                  side=SideLabelCombobox.get()))
+
             for i in range(len(self.ElementDict["Buttons"]) + 1):
                 self.ElementDict["Buttons"][str(i)] = {
                     "text": LabelTextEntry.get(),
-                    "bg": BgLabelEntry.get(),
+                    "bg": self.ElementColor,
                     "fg": FgLabelEntry.get(),
                     "font": ("Arial", int(FontLabelEntry.get())),
                     "wraplength": WrapLabelValue.get(),
@@ -293,7 +317,8 @@ class AppMaker(Tk):
         LabelTextEntry.pack()
 
         Label(LabelApp, text="Background color of the Button:").pack()
-        BgLabelEntry = Entry(LabelApp)
+        BgLabelEntry = Button(LabelApp, text="Choose color",
+                              command=ColorChooser)
         BgLabelEntry.pack()
 
         Label(LabelApp, text="Couleur du texte (fg):").pack()
@@ -342,6 +367,7 @@ class AppMaker(Tk):
         LabelApp.mainloop()
 
     def RunPreview(self):
+        self.ListDebug.insert(0, f"Preview is running - {str(datetime.date.today())}")
         PreviewApp = Tk()
         PreviewApp.title(self.ElementDict["Window"]["title"])
         PreviewApp.config(bg=self.ElementDict["Window"]["bg"])
