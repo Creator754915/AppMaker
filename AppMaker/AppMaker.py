@@ -5,7 +5,7 @@ from tkinter.simpledialog import askstring
 from tkinter.ttk import Combobox, Notebook, Treeview
 
 from AppMaker.Variables import *
-from AppMaker.Variables import BASE_DICT, BASE_BTN
+from AppMaker.Variables import BASE_DICT
 from AppMaker.Widgets.WindowGUI import WindowPreview
 
 
@@ -95,7 +95,7 @@ class AppMaker(Tk):
         # Element Panel
 
         Button(self.ElementsSettings, text="Create Button", bg=button_color, relief='groove',command=self.CreateButton).pack(fill=X, padx=10, pady=10)
-        Button(self.ElementsSettings, text="Create Label", bg=button_color, relief='groove').pack(fill=X, padx=10, pady=10)
+        Button(self.ElementsSettings, text="Create Label", bg=button_color, relief='groove', command=self.CreateLabel).pack(fill=X, padx=10, pady=10)
         Button(self.ElementsSettings, text="Create Entry", bg=button_color, relief='groove').pack(fill=X, padx=10, pady=10)
 
         #self.CreateNewProject()
@@ -112,7 +112,7 @@ class AppMaker(Tk):
 
         self.EditMenu = Menu(self.MenuBar, tearoff=0)
         self.EditMenu.add_command(label="Create Button", command=self.CreateButton)
-        self.EditMenu.add_command(label="Create Label")
+        self.EditMenu.add_command(label="Create Label", command=self.CreateLabel)
         self.EditMenu.add_command(label="Create Entry")
 
 
@@ -178,6 +178,7 @@ class AppMaker(Tk):
                 border=int(BorderWidthButtonEntry.get()),
                 pady=int(PaddingYButtonEntry.get()),
                 padx=int(PaddingXButtonEntry.get()),
+                side=SideButtonStyle.get(),
                 command=str(FunctionButtonEntry.get())
             )
             button.pack(pady=10)
@@ -194,6 +195,7 @@ class AppMaker(Tk):
                     "border": int(BorderWidthButtonEntry.get()),
                     "pady": int(PaddingYButtonEntry.get()),
                     "padx": int(PaddingXButtonEntry.get()),
+                    "side": SideButtonStyle.get(),
                     "command": FunctionButtonEntry.get()
                 }
 
@@ -237,6 +239,10 @@ class AppMaker(Tk):
         BorderWidthButtonEntry = Entry(ButtonApp)
         BorderWidthButtonEntry.pack()
 
+        Label(ButtonApp, text="Side of the Button:").pack()
+        SideButtonStyle = Combobox(ButtonApp, state="readonly", values=[LEFT, RIGHT, TOP, BOTTOM, CENTER, NONE])
+        SideButtonStyle.pack()
+
         Label(ButtonApp, text="Padding Y:").pack()
         PaddingYButtonEntry = Entry(ButtonApp)
         PaddingYButtonEntry.pack()
@@ -246,12 +252,94 @@ class AppMaker(Tk):
         PaddingXButtonEntry.pack()
 
         FunctionButtonEntry = Entry(ButtonApp)
-        FunctionButtonEntry.pack()
+        FunctionButtonEntry.pack(pady=5)
 
         create_button_btn = Button(ButtonApp, text="Create button", command=create_button)
         create_button_btn.pack(pady=20)
 
         ButtonApp.mainloop()
+
+    def CreateLabel(self):
+        def create_label():
+            Label(LabelApp, text=LabelTextEntry.get(), bg=BgLabelEntry.get(), fg=FgLabelEntry.get(), font=("Arial", int(FontLabelEntry.get())),
+                  wraplength=int(WrapLabelValue.get()), underline=int(UnderlineLabelStyle.get()), relief=ReliefLabelCombobox.get(),
+                  border=BorderWidthLabelEntry.get(), width=WidthLabelStyle.get()).pack(pady=int(PaddingYLabelEntry.get()), padx=int(PaddingXLabelEntry.get()),
+                                                                side=SideLabelCombobox.get())
+            for i in range(len(self.ElementDict["Buttons"]) + 1):
+                self.ElementDict["Buttons"][str(i)] = {
+                    "text": LabelTextEntry.get(),
+                    "bg": BgLabelEntry.get(),
+                    "fg": FgLabelEntry.get(),
+                    "font": ("Arial", int(FontLabelEntry.get())),
+                    "wraplength": WrapLabelValue.get(),
+                    "underline": UnderlineLabelStyle.get(),
+                    "relief": ReliefLabelCombobox.get(),
+                    "border": int(BorderWidthLabelEntry.get()),
+                    "pady": int(PaddingYLabelEntry.get()),
+                    "padx": int(PaddingXLabelEntry.get()),
+                    "side": SideLabelCombobox.get()
+                }
+
+            self.ApplicationTree.insert("", END, text=f"Label {len(self.ElementDict["Labels"])}")
+
+            print(self.ElementDict["Labels"])
+
+        LabelApp = Tk()
+        LabelApp.title("AppMaker - Create Label")
+        LabelApp.geometry("400x350")
+
+        Label(LabelApp, text="Text of the button:").pack()
+        LabelTextEntry = Entry(LabelApp)
+        LabelTextEntry.pack()
+
+        Label(LabelApp, text="Background color of the Button:").pack()
+        BgLabelEntry = Entry(LabelApp)
+        BgLabelEntry.pack()
+
+        Label(LabelApp, text="Couleur du texte (fg):").pack()
+        FgLabelEntry = Entry(LabelApp)
+        FgLabelEntry.pack()
+
+        Label(LabelApp, text="Taille de la police:").pack()
+        FontLabelEntry = Entry(LabelApp)
+        FontLabelEntry.pack()
+
+        Label(LabelApp, text="Wrap of the Button:").pack()
+        WrapLabelValue = Spinbox(LabelApp, from_=0, to=128)
+        WrapLabelValue.pack()
+
+        Label(LabelApp, text="Underline of the Label:").pack()
+        UnderlineLabelStyle = Spinbox(LabelApp, from_=-1, to=5)
+        UnderlineLabelStyle.pack()
+
+        Label(LabelApp, text="Width of the Label:").pack()
+        WidthLabelStyle = Spinbox(LabelApp, from_=0, to=256)
+        WidthLabelStyle.pack()
+
+        Label(LabelApp, text="Relief of the Label:").pack()
+        ReliefLabelCombobox = Combobox(LabelApp, state="readonly", values=[FLAT, GROOVE, RAISED, RIDGE, SUNKEN])
+        ReliefLabelCombobox.pack()
+
+        Label(LabelApp, text="Border width:").pack()
+        BorderWidthLabelEntry = Spinbox(LabelApp, from_=0, to=64)
+        BorderWidthLabelEntry.pack()
+
+        Label(LabelApp, text="Side of the label:").pack()
+        SideLabelCombobox = Combobox(LabelApp, state="readonly", values=[LEFT, RIGHT, TOP, BOTTOM])
+        SideLabelCombobox.pack()
+
+        Label(LabelApp, text="Padding Y:").pack()
+        PaddingYLabelEntry = Entry(LabelApp)
+        PaddingYLabelEntry.pack()
+
+        Label(LabelApp, text="Padding X:").pack()
+        PaddingXLabelEntry = Entry(LabelApp)
+        PaddingXLabelEntry.pack()
+
+        create_label_btn = Button(LabelApp, text="Create label", command=create_label)
+        create_label_btn.pack(pady=20)
+
+        LabelApp.mainloop()
 
     def RunPreview(self):
         PreviewApp = Tk()
