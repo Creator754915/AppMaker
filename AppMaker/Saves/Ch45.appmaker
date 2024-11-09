@@ -1,0 +1,40 @@
+{
+    "Window": {
+        "title": "First AppMaker App",
+        "bg": "black",
+        "fg": "white",
+        "geometry": "200x350",
+        "resizable": [True, False],
+        "icon": 'C:/Users/franc/Discord Bot/folder.ico'
+    },
+    "Buttons": {
+        "0": {
+            "text": "hello",
+            "bg": "red",
+            "fg": "blue",
+            "fontSize": 12,
+            "state": NORMAL,
+            "relief": RIDGE,
+            "border": 5,
+            "pady": 2,
+            "padx": 10,
+            "side": NONE,
+            "fill": BOTH,
+        },
+        "1": {
+            "text": "Button 2",
+            "bg": "blue",
+            "fg": "white",
+            "fontSize": 18,
+            "state": NORMAL,
+            "relief": GROOVE,
+            "border": 2,
+            "pady": 20,
+            "padx": 10,
+            "side": LEFT,
+            "fill": NONE,
+        },
+    },
+    "Labels": {},
+    "Entry": {},
+}
