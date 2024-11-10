@@ -4,7 +4,9 @@ from tkinter import messagebox, filedialog, colorchooser
 from tkinter.filedialog import asksaveasfile
 from tkinter.simpledialog import askstring
 from tkinter.ttk import Combobox, Notebook, Treeview
+import customtkinter as ctk
 
+from AppMaker.Node import *
 from AppMaker.Variables import *
 from AppMaker.Variables import BASE_DICT
 from AppMaker.Widgets.WindowGUI import WindowPreview
@@ -21,55 +23,101 @@ class AppMaker(Tk):
         self.ProjectData = NONE
         self.ElementDict = BASE_DICT
         self.ElementColor = "black"
+        self.ConsoleList = []
         self.saved = False
 
-        self.FrameRight = Frame(self, width=250, bg=frame_bg)
+        ctk.set_default_color_theme("dark-blue")
+        ctk.set_appearance_mode("dark")
+        ctk.deactivate_automatic_dpi_awareness()
+
+        self.FrameRight = ctk.CTkFrame(self, width=250)
         self.FrameRight.pack(side=RIGHT, fill=BOTH)
 
-        self.FrameMiddle = Frame(self, width=450)
+        self.FrameMiddle = ctk.CTkFrame(self, width=450)
         self.FrameMiddle.pack(expand=1, fill=BOTH)
 
-        self.FrameBottom = Frame(self, height=200, bg=frame_bg)
+        self.FrameBottom = ctk.CTkFrame(self, height=200, corner_radius=0)
         self.FrameBottom.pack(side=BOTTOM, fill=BOTH)
 
         # Console Panel
 
-        self.ListDebug = Listbox(self.FrameBottom, fg="red")
-        self.ListDebug.pack(fill=X)
+        self.ConsoleTabView = ctk.CTkTabview(self.FrameBottom, anchor="nw")
+        self.ConsoleTabView.pack(fill=BOTH)
+
+        self.ConsoleTabView.add("Console")
+        self.ConsoleTabView.add("Debug")
+
+       # self.ClearButton = ctk.CTkButton(self.ConsoleTabView, width=30, text="x", bg_color="#2f2f2f", command=lambda: self.ConsoleList.clear())
+       # self.ClearButton.pack(pady=5, padx=10)
+
+        self.ConsoleFrame = ctk.CTkScrollableFrame(self.ConsoleTabView.tab("Console"))
+        self.ConsoleFrame.pack(padx=10, pady=10, expand=True, fill="both")
 
 
-        WindowPreview(master=self.FrameMiddle, cursor="center_ptr", highlightbackground="gray80", highlightthickness=2).pack(pady=20, padx=20, fill=BOTH, expand=True)
+        # WindowPreview and NodeEditor
+
+        self.TabViewEdit = ctk.CTkTabview(self.FrameMiddle, anchor="nw")
+        self.TabViewEdit.pack(fill=BOTH, expand=True)
+
+       #self.WindowPreviewEdit = ctk.CTkFrame(self.TabViewEdit)
+       #self.WindowPreviewEdit.pack(fill=BOTH, expand=True)
+       #self.NodeEditor = ctk.CTkFrame(self.TabViewEdit)
+       #self.NodeEditor.pack(fill=BOTH, expand=True)
+
+        self.TabViewEdit.add("Window Preview")
+        self.TabViewEdit.add("Node Editor")
 
 
-        self.NoteBook = Notebook(self.FrameRight)
-        self.NoteBook.pack(fill="both", expand=True)
+        self.WindowPreview = WindowPreview(master=self.TabViewEdit.tab("Window Preview"), fg_color="gray40")
+        self.WindowPreview.pack(pady=20, padx=20, fill=BOTH, expand=True)
 
-        self.WindowInfo = Frame(self.NoteBook)
-        self.ElementsSettings = Frame(self.NoteBook)
-        self.ProjectSettings = Frame(self.NoteBook)
+        self.NodeCanvas = NodeCanvas(self.TabViewEdit.tab("Node Editor"))
+        self.NodeCanvas.pack(fill="both", expand=True)
 
-        self.WindowInfo.pack(fill='both', expand=False)
-        self.ElementsSettings.pack(fill='both', expand=True)
-        self.ProjectSettings.pack(fill='both', expand=True)
+        NodeValue(self.NodeCanvas, text="Function1", x=0, y=10)
+        NodeOperation(self.NodeCanvas, text="Combine to", x=150, y=1)
+        NodeCompile(self.NodeCanvas, text="Run", x=300, y=10)
 
-        self.NoteBook.add(self.ProjectSettings, text='Project')
-        self.NoteBook.add(self.WindowInfo, text='Window')
-        self.NoteBook.add(self.ElementsSettings, text='Elements')
+        self.NodeMenu = NodeMenu(self.NodeCanvas)  # right click or press <space> to spawn the node menu
+        self.NodeMenu.add_node(label="Function", command=self.AddNodeFunction)
+        self.NodeMenu.add_node(label="Node Operation", command=lambda: NodeOperation(self.NodeCanvas))
+        self.NodeMenu.add_node(label="Node Compile", command=lambda: NodeCompile(self.NodeCanvas))
+
+
+        # Tools Box
+        self.TabViewTool = ctk.CTkTabview(self.FrameRight, anchor="nw", fg_color="gray20", border_width=2)
+        self.TabViewTool.pack(fill="both", expand=True)
+
+       # self.WindowInfo = ctk.CTkFrame(self.TabViewTool)
+       # self.ElementsSettings = ctk.CTkFrame(self.TabViewTool)
+       # self.ProjectSettings = ctk.CTkFrame(self.TabViewTool)
+
+       # self.WindowInfo.pack(fill='both', expand=False)
+       # self.ElementsSettings.pack(fill='both', expand=True)
+       # self.ProjectSettings.pack(fill='both', expand=True)
+
+        self.TabViewTool.add('Project')
+        self.TabViewTool.add('Window')
+        self.TabViewTool.add('Elements')
+
 
         # Project Panel
+        self.ApplicationTree = ctk.CTkScrollableFrame(self.TabViewTool.tab("Project"))
+        self.ApplicationTree.pack(padx=10, pady=10, fill="both")
 
-        self.ApplicationTree = Treeview(self.ProjectSettings)
-        self.ApplicationTree.pack(pady=5, padx=2)
+        ctk.CTkLabel(self.TabViewTool.tab("Project"), text="Project Name").pack(pady=5)
+        ctk.CTkEntry(self.TabViewTool.tab("Project"), placeholder_text=self.ProjectName).pack(padx=5, pady=5, fill=BOTH)
+
 
         # Window Panel
-
-        Label(self.WindowInfo, text="Application Name", font=("New Time Roman", 12)).pack()
+        ctk.CTkLabel(self.TabViewTool.tab("Window"), text="Application Name", font=("New Time Roman", 12)).pack()
 
         def on_value_change(*args):
             self.ElementDict["Window"]["title"] = self.AppName.get()
             self.ElementDict["Window"]["bg"] = self.BgApp.get()
             self.ElementDict["Window"]["geometry"] = f"{AppWithValue.get()}x{AppHeightValue.get()}"
             self.ElementDict["Window"]["resizable"] = [WidthBool.get(), HeightBool.get()]
+
 
         EntryNameValue = StringVar()
         EntryBgValue = StringVar()
@@ -85,39 +133,38 @@ class AppMaker(Tk):
         WidthBool.trace_add("write", on_value_change)
         HeightBool.trace_add("write", on_value_change)
 
-        self.AppName = Entry(self.WindowInfo, textvariable=EntryNameValue)
-        self.AppName.pack()
+        self.AppName = ctk.CTkEntry(self.TabViewTool.tab("Window"), placeholder_text="Application name", textvariable=EntryNameValue)
+        self.AppName.pack(padx=5, fill=BOTH)
 
-        Label(self.WindowInfo, text="Background Color", font=("New Time Roman", 12)).pack()
-        self.BgApp = Entry(self.WindowInfo, textvariable=EntryBgValue)
-        self.BgApp.pack()
+        ctk.CTkLabel(self.TabViewTool.tab("Window"), text="Background Color", font=("New Time Roman", 12)).pack()
+        self.BgApp = ctk.CTkEntry(self.TabViewTool.tab("Window"), placeholder_text="Application background", textvariable=EntryBgValue)
+        self.BgApp.pack(padx=5, fill=BOTH)
 
-        Label(self.WindowInfo, text="Icon Path", font=("New Time Roman", 12)).pack()
-        self.button_icon = Button(self.WindowInfo, text="Open Icon", width=17, relief="groove", bg=button_color)
-        self.button_icon.pack()
+        ctk.CTkLabel(self.TabViewTool.tab("Window"), text="Icon Path", font=("New Time Roman", 12)).pack()
+        self.button_icon = ctk.CTkButton(self.TabViewTool.tab("Window"), text="Open Icon", width=17)
+        self.button_icon.pack(padx=5, fill=BOTH)
 
-        Label(self.WindowInfo, text="Width App", font=("New Time Roman", 12)).pack()
-        self.SliderWidth = Scale(self.WindowInfo, variable=AppWithValue, from_=200, to=1080, orient=HORIZONTAL, activebackground="gray", length=200, bd=0)
+        ctk.CTkLabel(self.TabViewTool.tab("Window"), text="Width App", font=("New Time Roman", 12)).pack()
+        self.SliderWidth = ctk.CTkSlider(self.TabViewTool.tab("Window"), variable=AppWithValue, from_=200, to=1080)
         self.SliderWidth.set(720)
         self.SliderWidth.pack()
 
-        Label(self.WindowInfo, text="Height App", font=("New Time Roman", 12)).pack()
-        self.SliderHeight = Scale(self.WindowInfo, variable=AppHeightValue, from_=200, to=1080, orient=HORIZONTAL, activebackground="gray", length=200, bd=0)
+        ctk.CTkLabel(self.TabViewTool.tab("Window"), text="Height App", font=("New Time Roman", 12)).pack()
+        self.SliderHeight = ctk.CTkSlider(self.TabViewTool.tab("Window"), variable=AppHeightValue, from_=200, to=1080)
         self.SliderHeight.set(460)
         self.SliderHeight.pack()
 
-        Label(self.WindowInfo, text="Resizable", font=("New Time Roman", 10)).pack()
-        self.CheckboxWidth = Checkbutton(self.WindowInfo, text='Width', variable=WidthBool, onvalue=True, offvalue=False)
-        self.CheckboxWidth.pack()
+        ctk.CTkLabel(self.TabViewTool.tab("Window"), text="Resizable", font=("New Time Roman", 10)).pack()
+        self.CheckboxWidth = ctk.CTkCheckBox(self.TabViewTool.tab("Window"), text='Width', variable=WidthBool, onvalue=True, offvalue=False)
+        self.CheckboxWidth.pack(pady=5)
 
-        self.CheckboxHeight = Checkbutton(self.WindowInfo, text='Height', variable=HeightBool, onvalue=True, offvalue=False)
+        self.CheckboxHeight = ctk.CTkCheckBox(self.TabViewTool.tab("Window"), text='Height', variable=HeightBool, onvalue=True, offvalue=False)
         self.CheckboxHeight.pack()
 
         # Element Panel
-
-        Button(self.ElementsSettings, text="Create Button", cursor="hand2", bg=button_color, relief='groove',command=self.CreateButton).pack(fill=X, padx=10, pady=10)
-        Button(self.ElementsSettings, text="Create Label", cursor="hand2", bg=button_color, relief='groove', command=self.CreateLabel).pack(fill=X, padx=10, pady=10)
-        Button(self.ElementsSettings, text="Create Entry", cursor="hand2", bg=button_color, relief='groove').pack(fill=X, padx=10, pady=10)
+        ctk.CTkButton(self.TabViewTool.tab("Elements"), text="Create Button", cursor="hand2",command=self.CreateButton).pack(fill=X, padx=10, pady=10)
+        ctk.CTkButton(self.TabViewTool.tab("Elements"), text="Create Label", cursor="hand2", command=self.CreateLabel).pack(fill=X, padx=10, pady=10)
+        ctk.CTkButton(self.TabViewTool.tab("Elements"), text="Create Entry", cursor="hand2").pack(fill=X, padx=10, pady=10)
 
         #self.CreateNewProject()
 
@@ -153,6 +200,26 @@ class AppMaker(Tk):
 
         self.mainloop()
 
+
+
+    def addReturn(self, info):
+        self.ConsoleList.append(f"{str(info)}")
+        self.ShowConsole()
+
+    def ShowConsole(self):
+        for widget in self.ConsoleFrame.winfo_children():
+            widget.destroy()
+
+        for i, element in enumerate(self.ConsoleList):
+            label = ctk.CTkLabel(self.ConsoleFrame, text=element, anchor="w")
+            label.pack(fill="x", padx=5, pady=2)
+
+    def AddNodeFunction(self):
+        dialog = ctk.CTkInputDialog(text="Enter a name for the function:", title="Function Node")
+        text = dialog.get_input()
+        if text is not None:
+            if text.isdigit():
+                NodeValue(self.NodeCanvas, text=f"{str(text)}", value=str(text))
 
     def PosEvent(self, event):
         if event.x > 840:
@@ -367,7 +434,7 @@ class AppMaker(Tk):
         LabelApp.mainloop()
 
     def RunPreview(self):
-        self.ListDebug.insert(0, f"Preview is running - {str(datetime.date.today())}")
+        self.addReturn(f"Preview is running - {str(datetime.date.today())}")
         PreviewApp = Tk()
         PreviewApp.title(self.ElementDict["Window"]["title"])
         PreviewApp.config(bg=self.ElementDict["Window"]["bg"])
