@@ -1,14 +1,15 @@
 import customtkinter as ctk
+from AppMaker.Widgets.SpinBox import SpinBox
 from tkinter import *
 
 class ButtonMenu(ctk.CTk):
-    def __init__(self):
+    def __init__(self, ElementDict):
         super().__init__()
         self.title("AppMaker - Create Button")
         self.geometry("400x350")
         ctk.set_default_color_theme("dark-blue")
         ctk.set_appearance_mode("dark")
-        self.ElementDict = {}
+        self.ElementDict = ElementDict
 
         ctk.CTkLabel(self, text="Text of the button:").pack()
         self.ButtonTextEntry = ctk.CTkEntry(self)
@@ -51,8 +52,8 @@ class ButtonMenu(ctk.CTk):
         self.PaddingYButtonEntry.pack()
 
         ctk.CTkLabel(self, text="Padding X:").pack()
-        self.PaddingXButtonEntry = ctk.CTkEntry(self)
-        self.PaddingXButtonEntry.pack()
+        self.PaddingXButtonEntry = SpinBox(self, width=250)
+        self.PaddingXButtonEntry.pack(fill=BOTH, padx=20)
 
         self.FunctionButtonEntry = ctk.CTkEntry(self)
         self.FunctionButtonEntry.pack(pady=5)
@@ -64,22 +65,20 @@ class ButtonMenu(ctk.CTk):
 
 
     def CreateButton(self):
-        def create_button():
-            for i in range(len(self.ElementDict["Buttons"]) + 1):
-                self.ElementDict["Buttons"][str(i)] = {
-                    "text": self.ButtonTextEntry.get(),
-                    "bg": self.BgButtonEntry.get(),
-                    "fg": self.FgButtonEntry.get(),
-                    "font": ("Arial", int(self.FontButtonEntry.get())),
-                    "state": self.StateButtonValue.get(),
-                    "relief": self.ReliefButtonStyle.get(),
-                    "width": int(self.WidthButtonEntry.get()),
-                    "border": int(self.BorderWidthButtonEntry.get()),
-                    "pady": int(self.PaddingYButtonEntry.get()),
-                    "padx": int(self.PaddingXButtonEntry.get()),
-                    "side": self.SideButtonStyle.get(),
-                    "command": self.FunctionButtonEntry.get()
-                }
+        for i in range(len(self.ElementDict["Buttons"]) + 1):
+            self.ElementDict["Buttons"][str(i)] = {
+                "text": self.ButtonTextEntry.get(),
+                "bg": self.BgButtonEntry.get(),
+                "fg": self.FgButtonEntry.get(),
+                "font": ("Arial", int(self.FontButtonEntry.get())),
+                "state": self.StateButtonValue.get(),
+                "relief": self.ReliefButtonStyle.get(),
+                "width": int(self.WidthButtonEntry.get()),
+                "border": int(self.BorderWidthButtonEntry.get()),
+                "pady": int(self.PaddingYButtonEntry.get()),
+                "padx": int(self.PaddingXButtonEntry.get()),
+                "side": self.SideButtonStyle.get(),
+                "command": self.FunctionButtonEntry.get()
+            }
 
-
-ButtonMenu()
+        return self.ElementDict
