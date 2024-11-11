@@ -1,36 +1,35 @@
 from tkinter import *
+import customtkinter as ctk
 
-class WindowPreview(Frame):
+class WindowPreview(ctk.CTkFrame):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.config(height=400)
         self.title = "My First App"
+        self._corner_radius = 0
 
-        header_frame = Frame(self, bg="gray80")
+        header_frame = ctk.CTkFrame(self, corner_radius=0, fg_color="gray30")
         header_frame.pack(fill=X)
 
-        title_label = Label(header_frame, bg="gray80", text=self.title, font=("Arial", 14, "bold"))
+        title_label = ctk.CTkLabel(header_frame, text=self.title, font=("Arial", 12, "bold"))
         title_label.pack(side=LEFT, padx=2, pady=5)
 
-        button3 = Button(header_frame, text="X")
-        button3.pack(side=RIGHT, padx=2, pady=2)
+        closeWindow = ctk.CTkButton(header_frame, text="X", font=("Arial",8, "bold"), width=2)
+        closeWindow.pack(side=RIGHT, padx=2, pady=2)
 
-        button2 = Button(header_frame, text="-")
-        button2.pack(side=RIGHT, padx=2, pady=2)
+        fullscreenWindow = ctk.CTkButton(header_frame, text="□", font=("Arial", 12, "bold"), width=2)
+        fullscreenWindow.pack(side=RIGHT, padx=2, pady=2)
 
-        button1 = Button(header_frame, text="□")
-        button1.pack(side=RIGHT, padx=2, pady=2)
+        hideWindow = ctk.CTkButton(header_frame, text="-", font=("Arial", 10, "bold"), width=2)
+        hideWindow.pack(side=RIGHT, padx=2, pady=2)
 
 
-        self.button_container = Frame(self)
-        self.button_container.pack(pady=10, padx=5)
+        self.button_container = ctk.CTkFrame(self, corner_radius=0)
+        self.button_container.pack(fill=BOTH, expand=True)
 
-        Button(self.button_container, text="fdfdsfds").pack()
+        ctk.CTkButton(self.button_container, text="LEFT").pack(side=LEFT)
 
-        Button(self.button_container, text="fdsfds").pack()
+        ctk.CTkButton(self.button_container, text="TOP").pack(side=TOP)
 
-        Button(self.button_container, text="trey").pack()
+        ctk.CTkButton(self.button_container, text="RIGHT").pack(side=RIGHT)
 
-        Button(self.button_container, text="nbcv").pack()
-
-        Button(self.button_container, text="ioupo").pack()
+        ctk.CTkButton(self.button_container, text="BOTTOM").pack(side=BOTTOM)
