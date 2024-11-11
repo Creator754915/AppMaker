@@ -1,10 +1,13 @@
 import datetime
 from tkinter import *
-from tkinter import messagebox, filedialog, colorchooser
+from tkinter import messagebox, filedialog
 from tkinter.filedialog import asksaveasfile
 from tkinter.simpledialog import askstring
-from tkinter.ttk import Combobox, Notebook, Treeview
+from tkinter.ttk import Combobox, Treeview
 import customtkinter as ctk
+
+from AppMaker.Widgets.ButtonMenu import ButtonMenu
+from Prefabs.MathsNodeFunction import AddTo, Mul, SubTo
 
 from AppMaker.Node import *
 from AppMaker.Variables import *
@@ -47,8 +50,8 @@ class AppMaker(Tk):
         self.ConsoleTabView.add("Console")
         self.ConsoleTabView.add("Debug")
 
-       # self.ClearButton = ctk.CTkButton(self.ConsoleTabView, width=30, text="x", bg_color="#2f2f2f", command=lambda: self.ConsoleList.clear())
-       # self.ClearButton.pack(pady=5, padx=10)
+        # self.ClearButton = ctk.CTkButton(self.ConsoleTabView, width=30, text="x", bg_color="#2f2f2f", command=lambda: self.ConsoleList.clear())
+        # self.ClearButton.pack(pady=5, padx=10)
 
         self.ConsoleFrame = ctk.CTkScrollableFrame(self.ConsoleTabView.tab("Console"))
         self.ConsoleFrame.pack(padx=10, pady=10, expand=True, fill="both")
@@ -68,21 +71,37 @@ class AppMaker(Tk):
         self.TabViewEdit.add("Node Editor")
 
 
-        self.WindowPreview = WindowPreview(master=self.TabViewEdit.tab("Window Preview"), fg_color="gray40")
+        self.WindowPreview = WindowPreview(master=self.TabViewEdit.tab("Window Preview"), fg_color="gray50")
         self.WindowPreview.pack(pady=20, padx=20, fill=BOTH, expand=True)
 
         self.NodeCanvas = NodeCanvas(self.TabViewEdit.tab("Node Editor"))
         self.NodeCanvas.pack(fill="both", expand=True)
+        self.NodeCanvas.rowconfigure(0, weight=1)
+        button_1 = ctk.CTkButton(self.NodeCanvas, text="save", width=50, command=lambda: self.NodeCanvas.save("canvas.json"))
+        button_1.grid(pady=10, padx=10, sticky="se")
 
-        NodeValue(self.NodeCanvas, text="Function1", x=0, y=10)
+        button_2 = ctk.CTkButton(self.NodeCanvas, text="load", width=50, command=lambda: self.NodeCanvas.load("canvas.json"))
+        button_2.grid(pady=10, padx=10, sticky="se")
+
+        NodeValue(self.NodeCanvas, text="Value 5", fg_color="#363640", socket_color="#2463aa", x=0, y=10)
         NodeOperation(self.NodeCanvas, text="Combine to", x=150, y=1)
         NodeCompile(self.NodeCanvas, text="Run", x=300, y=10)
+
+        def AddValueNode():
+            dialog = ctk.CTkInputDialog(text="Type in a number:", title="Value Node")
+            text = dialog.get_input()
+            if text is not None:
+                if text.isdigit():
+                    NodeValue(self.NodeCanvas, text=f"Value: {text}", value=int(text))
 
         self.NodeMenu = NodeMenu(self.NodeCanvas)  # right click or press <space> to spawn the node menu
         self.NodeMenu.add_node(label="Function", command=self.AddNodeFunction)
         self.NodeMenu.add_node(label="Node Operation", command=lambda: NodeOperation(self.NodeCanvas))
         self.NodeMenu.add_node(label="Node Compile", command=lambda: NodeCompile(self.NodeCanvas))
-
+        self.NodeMenu.add_node(label="Value Node", command=AddValueNode)
+        self.NodeMenu.add_node(label="Add 1 to", command=lambda: NodeOperation(self.NodeCanvas, inputs=1, text="Add 1 to", command=AddTo))
+        self.NodeMenu.add_node(label="Sub 1 to", command=lambda: NodeOperation(self.NodeCanvas, inputs=1, text="Sub 1 to", command=SubTo))
+        self.NodeMenu.add_node(label="Multiply", command=lambda: NodeOperation(self.NodeCanvas, text="Multiply", command=Mul))
 
         # Tools Box
         self.TabViewTool = ctk.CTkTabview(self.FrameRight, anchor="nw", fg_color="gray20", border_width=2)
@@ -113,10 +132,15 @@ class AppMaker(Tk):
         ctk.CTkLabel(self.TabViewTool.tab("Window"), text="Application Name", font=("New Time Roman", 12)).pack()
 
         def on_value_change(*args):
-            self.ElementDict["Window"]["title"] = self.AppName.get()
-            self.ElementDict["Window"]["bg"] = self.BgApp.get()
-            self.ElementDict["Window"]["geometry"] = f"{AppWithValue.get()}x{AppHeightValue.get()}"
-            self.ElementDict["Window"]["resizable"] = [WidthBool.get(), HeightBool.get()]
+            try:
+                self.ElementDict["Window"]["title"] = self.AppName.get()
+                self.ElementDict["Window"]["bg"] = self.BgApp.get()
+                self.ElementDict["Window"]["geometry"] = f"{AppWithValue.get()}x{AppHeightValue.get()}"
+                self.ElementDict["Window"]["resizable"] = [WidthBool.get(), HeightBool.get()]
+                self.WindowPreview.ChangeTitle(self.AppName.get())
+                self.WindowPreview.ChangeBg(self.BgApp.get())
+            except Exception as e:
+                print(e)
 
 
         EntryNameValue = StringVar()
@@ -219,7 +243,7 @@ class AppMaker(Tk):
         text = dialog.get_input()
         if text is not None:
             if text.isdigit():
-                NodeValue(self.NodeCanvas, text=f"{str(text)}", value=str(text))
+                NodeValue(self.NodeCanvas, text=f"Function: {text}", x=0, y=0)
 
     def PosEvent(self, event):
         if event.x > 840:
@@ -253,17 +277,17 @@ class AppMaker(Tk):
 
 
     def CreateButton(self):
+        btnm = ButtonMenu(ElementDict=self.ElementDict)
         def create_button():
-            button = Button(
+            button = ctk.CTkButton(
                 ButtonApp,
                 text=ButtonTextEntry.get(),
-                bg=BgButtonEntry.get(),
-                fg=FgButtonEntry.get(),
+                fg_color=BgButtonEntry.get(),
+                text_color=FgButtonEntry.get(),
                 font=("Arial", int(FontButtonEntry.get())),
                 state=StateButtonValue.get(),
-                relief=ReliefButtonStyle.get(),
                 width=int(WidthButtonEntry.get()),
-                border=int(BorderWidthButtonEntry.get()),
+                border_width=int(BorderWidthButtonEntry.get()),
                 command=str(FunctionButtonEntry.get())
             )
             button.pack(pady=int(PaddingYButtonEntry.get()), padx=int(PaddingXButtonEntry.get()),
@@ -284,8 +308,6 @@ class AppMaker(Tk):
                     "side": SideButtonStyle.get(),
                     "command": FunctionButtonEntry.get()
                 }
-
-            self.ApplicationTree.insert("", END, text=f"Button {len(self.ElementDict["Buttons"])}")
 
             print(self.ElementDict["Buttons"])
 
@@ -457,6 +479,7 @@ class AppMaker(Tk):
                    padx=self.ElementDict["Labels"][str(i)]["padx"], pady=self.ElementDict["Labels"][str(i)]["pady"]))
 
         PreviewApp.mainloop()
+        self.addReturn(f"Preview is closed ! - {str(datetime.date.today())}")
 
 
 
